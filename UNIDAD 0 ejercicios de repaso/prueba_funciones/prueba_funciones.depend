@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1711842698 source:c:\users\ara_0\onedrive\escritorio\topicos\unidad 0 ejercicios de repaso\prueba_funciones\main.c
+	<stdio.h>
+	<stdlib.h>
+	"funciones.h"
+
+1711841982 c:\users\ara_0\onedrive\escritorio\topicos\unidad 0 ejercicios de repaso\prueba_funciones\funciones.h
+
+1711843607 source:c:\users\ara_0\onedrive\escritorio\topicos\unidad 0 ejercicios de repaso\prueba_funciones\funciones.c
+
