@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1712517597 source:c:\users\ara_0\onedrive\escritorio\topicos\proyecto_fecha\fecha.c
+	"fecha.h"
+
+1712680153 c:\users\ara_0\onedrive\escritorio\topicos\proyecto_fecha\fecha.h
+	<stdio.h>
+	<stdlib.h>
+	<stdbool.h>
+
+1712679731 source:c:\users\ara_0\onedrive\escritorio\topicos\proyecto_fecha\main.c
+	"fecha.h"
+
