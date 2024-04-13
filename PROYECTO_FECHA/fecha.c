@@ -81,213 +81,65 @@ void SumarDiasAFecha(int diasASumar,T_FECHA * fecha)
     }
 }
 //----------------------------------------------------------------------------------------------------
-int SUMARDiaMesAnio(T_FECHA fechaMayor, T_FECHA fechaMenor)
+int __diasDeLaFecha (T_FECHA *fecha)
 {
-    int CantDeDiasMes,SumaDeDias=0,CantDeDiasAnio;
-    while(fechaMenor.anio < fechaMayor.anio)
+    int dias=0,anio,mes ;
+
+    for (anio=1601; anio< fecha->anio ; anio++)
     {
-        if( EsBisiesto(fechaMenor.anio) )
-            CantDeDiasAnio=366;
+        if( EsBisiesto(anio) )
+            dias+=366;
         else
-            CantDeDiasAnio=365;
-        SumaDeDias+=CantDeDiasAnio;
-        fechaMenor.anio++;
+            dias+=365;
     }
-    while(fechaMenor.mes < fechaMayor.mes)
+    for ( mes=1; mes < fecha->mes; mes++)
     {
-        CantDeDiasMes=CantDiasDelMes(fechaMenor.mes,fechaMenor.anio);
-        SumaDeDias+= CantDeDiasMes;
-        fechaMenor.mes ++;
+        dias+= CantDiasDelMes(mes, fecha->anio);
     }
-    SumaDeDias+=fechaMenor.dia;
-    while(fechaMenor.dia < fechaMayor.dia)
-    {
-        SumaDeDias++;
-        fechaMenor.dia++;
-    }
-    return SumaDeDias;
+    dias += fecha->dia;
+    return dias;
 }
-//----------------------------------------------------------------------------------------------------
-int SUMARDiaMesMesAnio(T_FECHA fechaMayor, T_FECHA fechaMenor)
+//---------------------------------------------------------------------------------------------------
+
+int _difEntreFechas(T_FECHA * fechaMayor,T_FECHA * fechaMenor)
 {
-    int CantDeDiasMes,SumaDeDias=0,CantDeDiasAnio,aux=1;
-    while(fechaMenor.anio < fechaMayor.anio)
-    {
-        if( EsBisiesto(fechaMenor.anio) )
-            CantDeDiasAnio=366;
-        else
-            CantDeDiasAnio=365;
-        SumaDeDias+=CantDeDiasAnio;
-        fechaMenor.anio++;
-    }
-    CantDeDiasMes=CantDiasDelMes(fechaMayor.mes,fechaMayor.anio);
-    SumaDeDias += CantDeDiasMes - fechaMayor.dia;
-    fechaMayor.mes++;
-    while(fechaMayor.mes <= 12)
-    {
-        CantDeDiasMes=CantDiasDelMes(fechaMayor.mes,fechaMayor.anio);
-        SumaDeDias+= CantDeDiasMes;
-        fechaMenor.mes ++;
-    }
-        while(aux < fechaMenor.mes)
-    {
-        CantDeDiasMes=CantDiasDelMes(aux,fechaMayor.anio);
-        SumaDeDias+= CantDeDiasMes;
-        fechaMenor.mes ++;
-    }
-    SumaDeDias += fechaMenor.dia;
-    return SumaDeDias;
+    int dif, aux;
+    aux=__diasDeLaFecha(fechaMenor);
+    dif=__diasDeLaFecha(fechaMayor);
+    dif -= aux;
+    return dif;
 }
 //----------------------------------------------------------------------------------------------------
 int DiferenciaEntreFechas(T_FECHA * fecha1, T_FECHA * fecha2)
 {
-    int totalDias=0;
-    switch(true)
+    int diasDiferencia;
+    if (fecha1->anio > fecha2->anio)
+        diasDiferencia=_difEntreFechas(fecha1,fecha2);
+    else if (fecha1->anio == fecha2->anio)
     {
-    case fecha1->anio > fecha2->anio:
-        switch(true)
+        if (fecha1->mes > fecha2->mes)
         {
-        case (fecha1->mes) > (fecha2->mes):
-            switch(true)
-            {
-            case (fecha1->dia) > (fecha2->dia):
-                totalDias= SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha1,*fecha2);
-                break;
-            }
-            break;
-        case fecha1->mes == fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha1,*fecha2);
-                break;
-            }
-            break;
-        case fecha1->mes < fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha1,*fecha2);
-                break;
-            }
-            break;
+            diasDiferencia=_difEntreFechas(fecha1,fecha2);
         }
-        break;
-    case fecha1->anio == fecha2->anio:
-        switch(true)
+        else if (fecha1->mes == fecha2->mes)
         {
-        case fecha1->mes > fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1.->dia == fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha2,*fecha1);
-                break;
-            }
-            break;
-        case fecha1->mes == fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha1,*fecha2);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = 0;
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            }
-            break;
-        case fecha1->mes < fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            }
-            break;
+            if (fecha1->dia > fecha2->dia)
+                diasDiferencia=_difEntreFechas(fecha1,fecha2);
+            else if (fecha1->dia == fecha2->dia)
+                diasDiferencia=0;
+            else //fecha1->dia < fecha2->dia
+                diasDiferencia=_difEntreFechas(fecha2,fecha1);
         }
-        break;
-    case fecha1->anio < fecha2->anio:
-        switch(true)
+        else //fecha1->mes < fecha2->mes
         {
-        case fecha1->mes > fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia == fecha2->dia:
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha2,*fecha1);
-                break;
-            }
-            break;
-        case fecha1->mes == fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            }
-            break;
-        case fecha1->mes < fecha2->mes:
-            switch(true)
-            {
-            case fecha1->dia > fecha2->dia:
-                totalDias = SUMARDiaMesMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia == fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            case fecha1->dia < fecha2->dia:
-                totalDias = SUMARDiaMesAnio(*fecha2,*fecha1);
-                break;
-            }
-            break;
+            diasDiferencia=_difEntreFechas(fecha2,fecha1);
         }
-        break;
     }
-    return totalDias;
+    else  //fecha1->anio < fecha2->anio
+        diasDiferencia=_difEntreFechas(fecha2,fecha1);
+    return diasDiferencia;
 }
-//---------
+
 
 
 
