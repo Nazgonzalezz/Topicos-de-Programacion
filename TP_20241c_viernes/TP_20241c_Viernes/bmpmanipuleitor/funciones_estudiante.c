@@ -72,24 +72,34 @@ void tonalidadAzul()
     fclose(PUNTERO_IMAGEN);
 }
 //----------------------------------------------------------------------------------------------------------------------------
-int _tamanioDeImagen(char* nombreArchi)
+int CopiarImagen ()
 {
-    FILE *PUNTERO_IMAGEN;
+    FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
+    cabeceraBMP_t cabecera;
     t_metadata metadata;
-    int tamano_imagen ,num_pixeles,i;
-
-    PUNTERO_IMAGEN = fopen( *nombreArchi , "rb");
-    if (PUNTERO_IMAGEN == NULL) {
-        puts("Error al abrir el archivo");
-        return -1;
+    unsigned char buffer[1024]; // Buffer para copiar los datos de la imagen
+    size_t bytesRead;
+    PUNTERO_IMAGEN = fopen("unlam.bmp", "rb");
+    if (PUNTERO_IMAGEN == NULL)
+    {
+        puts("Error al abrir el archivo original");
+        return ARCHIVO_NO_ENCONTRADO;
     }
-    // Leo la info del encabezado de la imagen en metadata (gracias a esto saco la info del tamanio y cantidad de pixeles)
-    fread(&metadata, sizeof(t_metadata), 1, PUNTERO_IMAGEN);
 
-    // Determinar el tamaño de los datos de píxeles en bytes
-    tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
-
+    PUNTERO_IMAGEN_MODIFICADA = fopen("unlamAzul.bmp", "wb");
+    if (PUNTERO_IMAGEN_MODIFICADA == NULL)
+    {
+        puts("Error al abrir el archivo modificado");
+        return 10;
+    }
+    
+     while ((bytesRead = fread(buffer, 1, sizeof(buffer), PUNTERO_IMAGEN)) > 0)
+    {
+        fwrite(buffer, 1, bytesRead, PUNTERO_IMAGEN_MODIFICADA);
+    }
+    
     fclose(PUNTERO_IMAGEN);
-    return tamano_imagen;
+    fclose(PUNTERO_IMAGEN_MODIFICADA);
+    return 1;
 }
-//----------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------
