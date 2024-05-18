@@ -14,7 +14,7 @@
     -----------------
     Apellido: Lopez
     Nombre: Uriel
-    DNI:
+    DNI: 41798196
     Entrega: entraga
     -----------------
     Apellido: Bravo
