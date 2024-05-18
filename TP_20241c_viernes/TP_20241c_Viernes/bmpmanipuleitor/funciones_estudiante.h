@@ -8,6 +8,8 @@ void _CopiarImagen (char nombImagen[]);
 void _tonalidadAzul();
 void _tonalidadRojo();
 void _tonalidadVerde();
-
+void _reducirContraste();
+void _escalaDeGrises();
+void _aumentarContraste();
 
 #endif // FUNCIONES_ESTUDIANTE_H_INCLUDED
