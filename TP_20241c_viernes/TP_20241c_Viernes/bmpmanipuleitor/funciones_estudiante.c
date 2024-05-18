@@ -210,6 +210,182 @@ void _tonalidadVerde()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
+void _escalaDeGrises()
+{
+    t_metadata metadata;
+    int tamano_imagen, num_pixeles, i;
+    FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
+    char nombreImag[]={"unlamEscalaGris.bmp"};
+
+    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    if (PUNTERO_IMAGEN == NULL)
+    {
+        puts("Error al abrir el archivo original");
+        return ARCHIVO_NO_ENCONTRADO;
+    }
+
+    PUNTERO_IMAGEN_MODIFICADA = fopen("unlamEscalaGris.bmp", "wb");
+    if (PUNTERO_IMAGEN_MODIFICADA == NULL)
+    {
+        puts("Error al abrir el archivo modificado");
+        return 10;
+    }
+    _CopiarImagen (nombreImag);
+
+    fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
+    fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN,4,SEEK_CUR);
+    fread(&metadata.comienzoImagen,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.tamEncabezado,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.ancho,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.alto,4,1,PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN,2,SEEK_CUR);
+    fread(&metadata.profundidad,2,1,PUNTERO_IMAGEN);
+
+    tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
+    num_pixeles = tamano_imagen / sizeof(t_pixel);
+
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);
+    fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
+
+    for (i = 0; i < num_pixeles; i++)
+    {
+        VECpixeles[i].pixel[0] = ( VECpixeles[i].pixel[0] + VECpixeles[i].pixel[1] + VECpixeles[i].pixel[2] ) / 3;
+        VECpixeles[i].pixel[1] = ( VECpixeles[i].pixel[0] + VECpixeles[i].pixel[1] + VECpixeles[i].pixel[2] ) / 3 ;
+        VECpixeles[i].pixel[2] = ( VECpixeles[i].pixel[0] + VECpixeles[i].pixel[1] + VECpixeles[i].pixel[2] ) / 3 ;
+    }
+
+    fseek(PUNTERO_IMAGEN_MODIFICADA, metadata.comienzoImagen, SEEK_SET);
+    fwrite(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN_MODIFICADA);
+
+    free(VECpixeles);
+    fclose(PUNTERO_IMAGEN);
+    fclose(PUNTERO_IMAGEN_MODIFICADA);
+}
+//-------------------------------------------------------------------------------------------------------------------------------
+void _aumentarContraste()
+{
+
+    t_metadata metadata;
+    int tamano_imagen, num_pixeles, i, j;
+    FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
+    char nombreImag[]={"unlamAumContraste.bmp"};
+
+    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    if (PUNTERO_IMAGEN == NULL)
+    {
+        puts("Error al abrir el archivo original");
+        return ARCHIVO_NO_ENCONTRADO;
+    }
+
+    PUNTERO_IMAGEN_MODIFICADA = fopen("unlamAumContraste.bmp", "wb");
+    if (PUNTERO_IMAGEN_MODIFICADA == NULL)
+    {
+        puts("Error al abrir el archivo modificado");
+        return 10;
+    }
+    _CopiarImagen (nombreImag);
+
+    fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
+    fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN,4,SEEK_CUR);
+    fread(&metadata.comienzoImagen,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.tamEncabezado,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.ancho,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.alto,4,1,PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN,2,SEEK_CUR);
+    fread(&metadata.profundidad,2,1,PUNTERO_IMAGEN);
+
+    tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
+    num_pixeles = tamano_imagen / sizeof(t_pixel);
+
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);
+    fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
+
+    for(i = 0; i < num_pixeles; i++)
+    {
+        for(j = 0; j< 3; j++)
+        {
+            float nuevoPixel = ( VECpixeles[i].pixel[j] - 127.5 ) * 25 + 127.5 ;
+            if (nuevoPixel < 0)
+                nuevoPixel = 0;
+            else if (nuevoPixel > 255)
+                nuevoPixel = 255;
+            VECpixeles[i].pixel[j]=(unsigned char )nuevoPixel;
+        }
+    }
+
+    fseek(PUNTERO_IMAGEN_MODIFICADA, metadata.comienzoImagen, SEEK_SET);
+    fwrite(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN_MODIFICADA);
+
+    free(VECpixeles);
+    fclose(PUNTERO_IMAGEN);
+    fclose(PUNTERO_IMAGEN_MODIFICADA);
+}
+//-------------------------------------------------------------------------------------------------------------------------------
+void _reducirContraste()
+{
+
+    t_metadata metadata;
+    int tamano_imagen, num_pixeles, i, j;
+    FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
+    char nombreImag[]={"unlamReduContraste.bmp"};
+
+    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    if (PUNTERO_IMAGEN == NULL)
+    {
+        puts("Error al abrir el archivo original");
+        return ARCHIVO_NO_ENCONTRADO;
+    }
+
+    PUNTERO_IMAGEN_MODIFICADA = fopen("unlamReduContraste.bmp", "wb");
+    if (PUNTERO_IMAGEN_MODIFICADA == NULL)
+    {
+        puts("Error al abrir el archivo modificado");
+        return 10;
+    }
+    _CopiarImagen (nombreImag);
+
+    fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
+    fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN,4,SEEK_CUR);
+    fread(&metadata.comienzoImagen,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.tamEncabezado,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.ancho,4,1,PUNTERO_IMAGEN);
+    fread(&metadata.alto,4,1,PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN,2,SEEK_CUR);
+    fread(&metadata.profundidad,2,1,PUNTERO_IMAGEN);
+
+    tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
+    num_pixeles = tamano_imagen / sizeof(t_pixel);
+
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);
+    fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
+
+    for(i = 0; i < num_pixeles; i++)
+    {
+        for(j = 0; j< 3; j++)
+        {
+            float nuevoPixel = ( VECpixeles[i].pixel[j] - 127.5 ) * 0.25 + 127.5 ;
+            if (nuevoPixel < 0)
+                nuevoPixel = 0;
+            else if (nuevoPixel > 255)
+                nuevoPixel = 255;
+            VECpixeles[i].pixel[j]=(unsigned char )nuevoPixel;
+        }
+    }
+
+    fseek(PUNTERO_IMAGEN_MODIFICADA, metadata.comienzoImagen, SEEK_SET);
+    fwrite(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN_MODIFICADA);
+
+    free(VECpixeles);
+    fclose(PUNTERO_IMAGEN);
+    fclose(PUNTERO_IMAGEN_MODIFICADA);
+}
+//-------------------------------------------------------------------------------------------------------------------------------
 void _CopiarImagen (char * nombImagen )
 {
     FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
