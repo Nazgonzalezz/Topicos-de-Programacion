@@ -386,32 +386,37 @@ void _reducirContraste()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _CopiarImagen (char * nombImagen )
+void _CopiarImagen (const char *nombImagen)
 {
-    FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
-    cabeceraBMP_t cabecera;
-    t_metadata metadata;
-    unsigned char buffer[1024];
-    size_t bytesRead;
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "rb");
-    if (PUNTERO_IMAGEN == NULL)
-    {
+    FILE *PUNTERO_IMAGEN = fopen("unlam.bmp", "rb");
+    if (PUNTERO_IMAGEN == NULL) {
         puts("Error al abrir el archivo original");
         return ARCHIVO_NO_ENCONTRADO;
     }
 
-    PUNTERO_IMAGEN_MODIFICADA = fopen( nombImagen , "wb");
-    if (PUNTERO_IMAGEN_MODIFICADA == NULL)
-    {
+    FILE *PUNTERO_IMAGEN_MODIFICADA = fopen(nombImagen, "wb");
+    if (PUNTERO_IMAGEN_MODIFICADA == NULL) {
         puts("Error al abrir el archivo modificado");
         return ARCHIVO_NO_ENCONTRADO;
     }
 
-     while ((bytesRead = fread(buffer, 1, sizeof(buffer), PUNTERO_IMAGEN)) > 0)
-    {
-        fwrite(buffer, 1, bytesRead, PUNTERO_IMAGEN_MODIFICADA);
-    }
+    fseek(PUNTERO_IMAGEN, 0, SEEK_END);
+    int tamnArch = ftell(PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN, 0, SEEK_SET);
 
+
+    unsigned char *memoTempo = (unsigned char *)malloc(tamnArch);
+    if (memoTempo == NULL)
+    {
+        puts("No se pudo asignar memoria");
+        fclose(PUNTERO_IMAGEN);
+        fclose(PUNTERO_IMAGEN_MODIFICADA);
+        return NO_SE_PUEDE_CREAR_ARCHIVO;
+    }
+    fread(memoTempo,1,tamnArch, PUNTERO_IMAGEN);
+    fwrite(memoTempo,1, tamnArch, PUNTERO_IMAGEN_MODIFICADA);
+
+    free(memoTempo);
     fclose(PUNTERO_IMAGEN);
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
