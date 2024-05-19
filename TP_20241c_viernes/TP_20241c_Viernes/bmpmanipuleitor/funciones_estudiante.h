@@ -16,6 +16,6 @@ void _tonalidadAzul(char argv[]);
 void _tonalidadRojo(char argv[]);
 void _tonalidadVerde(char argv[]);
 void _reducirContraste(char argv[]);
-
+void _achicarImagen(char argv[]);
 
 #endif // FUNCIONES_ESTUDIANTE_H_INCLUDED
