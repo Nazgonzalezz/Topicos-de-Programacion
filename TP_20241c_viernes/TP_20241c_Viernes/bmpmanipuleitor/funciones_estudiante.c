@@ -15,7 +15,7 @@
     Apellido: Lopez
     Nombre: Uriel
     DNI: 41798196
-    Entrega: entraga
+    Entrega: entrega
     -----------------
     Apellido: Bravo
     Nombre: Pablo
@@ -23,28 +23,98 @@
     Entrega: entrega
     -----------------
 
+
     Comentarios (opcionales) que deseen hacer al docente sobre el TP:
 
 */
-
+#include "funciones_estudiante.h"
 #include "constantes.h"
 
 int solucion(int argc, char* argv[])
 {
-/*
-    Aquí deben hacer el código que solucione lo solicitado.
-    Todas las funciones utilizadas deben estar declaradas en este archivo, y en su respectivo .h
-*/
+    char vec [11][30] = {"--escala-de-grises","--aumentar-contraste","--reducir-contraste","--tonalidad-azul","--tonalidad-verde","--tonalidad-roja","--recortar","--rotar-derecha","--rotar-izquierda","--achicar","--monocromo"};
+    int numArch = argc;
+    bool band;
+
+    argc--;
+    while (argc>1)
+    {
+        band=false;
+        for (int i=0;i<11;i++)
+        {
+            if (!band && strcmpi (argv [argc-1],vec [i]) == 0 )
+
+                switch (i)
+                {
+                    case 0:
+                        //--escala-de-grises
+                        _escalaDeGrises(argv[numArch]);
+                        band=true;
+                        break;
+                    case 1:
+                        //--aumentar-contraste
+                        _aumentarContraste( argv[numArch] );
+                        band=true;
+                        break;
+                    case 2:
+                        //--reducir-contraste
+                        _reducirContraste(argv[numArch]);
+                        band=true;
+                        break;
+                    case 3:
+                        //--tonalidad-azul
+                        _tonalidadAzul(argv[numArch]);
+                        band=true;
+                        break;
+                    case 4:
+                        //--tonalidad-verde
+                        _tonalidadVerde(argv[numArch]);
+                        band=true;
+                        break;
+                    case 5:
+                        //--tonalidad-roja
+                        _tonalidadRojo(argv[numArch]);
+                        band=true;
+                        break;
+                    case 6:
+                        //--recortar
+                        band=true;
+                        break;
+                    case 7:
+                        //--rotar-derecha
+                        band=true;
+                        break;
+                    case 8:
+                        //--rotar-izquierda
+                        band=true;
+                        break;
+                    case 9:
+                        //--achicar
+                        band=true;
+                        break;
+                    case 10:
+                        //--monocromo
+                        band=true;
+                        break;
+                }
+        }
+        argc--;
+    }
+   // Aquí deben hacer el código que solucione lo solicitado.
+ //   Todas las funciones utilizadas deben estar declaradas en este archivo, y en su respectivo .h
+
     return TODO_OK;
 }
 //----------------------------------------------------------------------------------------------------------------------------
-void _tonalidadAzul()
+void _tonalidadAzul(char argv[])
 {
     t_metadata metadata;
     int tamano_imagen, num_pixeles, i,aux;
-    FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
+    FILE * PUNTERO_IMAGEN;
+    FILE * PUNTERO_IMAGEN_MODIFICADA;
     char nombreImag[]={"unlamAzul.bmp"};
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+
+    PUNTERO_IMAGEN = fopen(argv, "r+b");
     if (PUNTERO_IMAGEN == NULL)
     {
         puts("Error al abrir el archivo original");
@@ -53,12 +123,14 @@ void _tonalidadAzul()
 
 
     PUNTERO_IMAGEN_MODIFICADA = fopen("unlamAzul.bmp", "wb");
+
     if (PUNTERO_IMAGEN_MODIFICADA == NULL)
     {
         puts("Error al abrir el archivo modificado");
         return ARCHIVO_NO_ENCONTRADO;
     }
-    _CopiarImagen (nombreImag);
+
+    _CopiarImagen (nombreImag,argv);
 
     fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
     fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
@@ -73,11 +145,12 @@ void _tonalidadAzul()
     tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
     num_pixeles = tamano_imagen / sizeof(t_pixel);
 
-    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel)); 
-    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);  
-    fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
 
-    for (i = 0; i < num_pixeles; i++) 
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    fseek(PUNTERO_IMAGEN_MODIFICADA, metadata.comienzoImagen, SEEK_SET);
+    fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN_MODIFICADA);
+
+    for (i = 0; i < num_pixeles ; i++)
     {
         if (VECpixeles[i].pixel[0] + 50 <= 255)
             VECpixeles[i].pixel[0] += 50;
@@ -95,13 +168,13 @@ void _tonalidadAzul()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _tonalidadRojo()
+void _tonalidadRojo(char argv[])
 {
     t_metadata metadata;
     int tamano_imagen, num_pixeles, i,aux;
     FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
     char nombreImag[]={"unlamRojo.bmp"};
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    PUNTERO_IMAGEN = fopen(argv, "r+b");
     if (PUNTERO_IMAGEN == NULL)
     {
         puts("Error al abrir el archivo original");
@@ -115,7 +188,7 @@ void _tonalidadRojo()
         puts("Error al abrir el archivo modificado");
         return ARCHIVO_NO_ENCONTRADO;
     }
-    _CopiarImagen (nombreImag);
+    _CopiarImagen (nombreImag,argv);
 
     fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
     fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
@@ -130,12 +203,12 @@ void _tonalidadRojo()
     tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
     num_pixeles = tamano_imagen / sizeof(t_pixel);
 
-    
-    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel)); 
-    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET); 
+
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);
     fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
 
-    for (i = 0; i < num_pixeles; i++)  
+    for (i = 0; i < num_pixeles; i++)
     {
         if (VECpixeles[i].pixel[2] + 50 <= 255)
             VECpixeles[i].pixel[2] += 50;
@@ -153,13 +226,13 @@ void _tonalidadRojo()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _tonalidadVerde()
+void _tonalidadVerde(char argv[])
 {
     t_metadata metadata;
     int tamano_imagen, num_pixeles, i,aux;
     FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
     char nombreImag[]={"unlamVerde.bmp"};
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    PUNTERO_IMAGEN = fopen(argv, "r+b");
     if (PUNTERO_IMAGEN == NULL)
     {
         puts("Error al abrir el archivo original");
@@ -173,7 +246,7 @@ void _tonalidadVerde()
         puts("Error al abrir el archivo modificado");
         return ARCHIVO_NO_ENCONTRADO;
     }
-    _CopiarImagen (nombreImag);
+    _CopiarImagen (nombreImag,argv);
 
     fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
     fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
@@ -188,8 +261,8 @@ void _tonalidadVerde()
     tamano_imagen = metadata.tamArchivo - metadata.tamEncabezado;
     num_pixeles = tamano_imagen / sizeof(t_pixel);
 
-    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel)); 
-    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET); 
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);
     fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
 
     for (i = 0; i < num_pixeles; i++)
@@ -210,14 +283,14 @@ void _tonalidadVerde()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _escalaDeGrises()
+void _escalaDeGrises(char argv[])
 {
     t_metadata metadata;
     int tamano_imagen, num_pixeles, i;
     FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
     char nombreImag[]={"unlamEscalaGris.bmp"};
 
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    PUNTERO_IMAGEN = fopen(argv, "r+b");
     if (PUNTERO_IMAGEN == NULL)
     {
         puts("Error al abrir el archivo original");
@@ -228,9 +301,9 @@ void _escalaDeGrises()
     if (PUNTERO_IMAGEN_MODIFICADA == NULL)
     {
         puts("Error al abrir el archivo modificado");
-        return 10;
+        return ARCHIVO_NO_ENCONTRADO;
     }
-    _CopiarImagen (nombreImag);
+    _CopiarImagen (nombreImag,argv);
 
     fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
     fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
@@ -264,7 +337,7 @@ void _escalaDeGrises()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _aumentarContraste()
+void _aumentarContraste(char argv[])
 {
 
     t_metadata metadata;
@@ -272,7 +345,7 @@ void _aumentarContraste()
     FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
     char nombreImag[]={"unlamAumContraste.bmp"};
 
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    PUNTERO_IMAGEN = fopen(argv, "r+b");
     if (PUNTERO_IMAGEN == NULL)
     {
         puts("Error al abrir el archivo original");
@@ -283,9 +356,9 @@ void _aumentarContraste()
     if (PUNTERO_IMAGEN_MODIFICADA == NULL)
     {
         puts("Error al abrir el archivo modificado");
-        return 10;
+        return ARCHIVO_NO_ENCONTRADO;
     }
-    _CopiarImagen (nombreImag);
+    _CopiarImagen (nombreImag,argv);
 
     fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
     fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
@@ -325,7 +398,7 @@ void _aumentarContraste()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _reducirContraste()
+void _reducirContraste(char argv[])
 {
 
     t_metadata metadata;
@@ -333,7 +406,7 @@ void _reducirContraste()
     FILE * PUNTERO_IMAGEN, * PUNTERO_IMAGEN_MODIFICADA;
     char nombreImag[]={"unlamReduContraste.bmp"};
 
-    PUNTERO_IMAGEN = fopen("unlam.bmp", "r+b");
+    PUNTERO_IMAGEN = fopen(argv, "r+b");
     if (PUNTERO_IMAGEN == NULL)
     {
         puts("Error al abrir el archivo original");
@@ -344,9 +417,9 @@ void _reducirContraste()
     if (PUNTERO_IMAGEN_MODIFICADA == NULL)
     {
         puts("Error al abrir el archivo modificado");
-        return 10;
+        return ARCHIVO_NO_ENCONTRADO;
     }
-    _CopiarImagen (nombreImag);
+    _CopiarImagen (nombreImag,argv);
 
     fseek(PUNTERO_IMAGEN, 2 ,SEEK_SET);
     fread(&metadata.tamArchivo, 4 , 1 , PUNTERO_IMAGEN);
@@ -386,9 +459,9 @@ void _reducirContraste()
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
 //-------------------------------------------------------------------------------------------------------------------------------
-void _CopiarImagen (const char *nombImagen)
+void _CopiarImagen (const char *nombImagen, char argv[])
 {
-    FILE *PUNTERO_IMAGEN = fopen("unlam.bmp", "rb");
+    FILE *PUNTERO_IMAGEN = fopen(argv, "rb");
     if (PUNTERO_IMAGEN == NULL) {
         puts("Error al abrir el archivo original");
         return ARCHIVO_NO_ENCONTRADO;
@@ -420,4 +493,4 @@ void _CopiarImagen (const char *nombImagen)
     fclose(PUNTERO_IMAGEN);
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
-//---------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------
