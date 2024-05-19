@@ -458,6 +458,110 @@ void _reducirContraste(char argv[])
     fclose(PUNTERO_IMAGEN);
     fclose(PUNTERO_IMAGEN_MODIFICADA);
 }
+//------------------------------------------------------------------------------------------------------------------------------
+void _achicarImagen(char argv[])
+{
+    t_metadata metadata;
+    int tamano_imagen, num_pixeles, num_pixeles_recortados,auxCeros=0;
+    FILE *PUNTERO_IMAGEN;
+    FILE *PUNTERO_IMAGEN_MODIFICADA;
+    char nombreImag[] = {"unlamRecortada.bmp"};
+
+    PUNTERO_IMAGEN = fopen(argv, "rb");
+    if (PUNTERO_IMAGEN == NULL) {
+        puts("Error al abrir el archivo original");
+        return;
+    }
+
+    PUNTERO_IMAGEN_MODIFICADA = fopen(nombreImag, "wb");
+    if (PUNTERO_IMAGEN_MODIFICADA == NULL) {
+        puts("Error al abrir el archivo modificado");
+        fclose(PUNTERO_IMAGEN);
+        return;
+    }
+
+    fseek(PUNTERO_IMAGEN, 2, SEEK_SET);
+    fread(&metadata.tamArchivo, 4, 1, PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN, 4, SEEK_CUR);
+    fread(&metadata.comienzoImagen, 4, 1, PUNTERO_IMAGEN);
+    fread(&metadata.tamEncabezado, 4, 1, PUNTERO_IMAGEN);
+    fread(&metadata.ancho, 4, 1, PUNTERO_IMAGEN);
+    fread(&metadata.alto, 4, 1, PUNTERO_IMAGEN);
+    fseek(PUNTERO_IMAGEN, 2, SEEK_CUR);
+    fread(&metadata.profundidad, 2, 1, PUNTERO_IMAGEN);
+
+    int nuevo_ancho = metadata.ancho / 2;
+    int nuevo_alto = metadata.alto / 2;
+    tamano_imagen = metadata.tamArchivo - metadata.comienzoImagen;
+    num_pixeles = tamano_imagen / sizeof(t_pixel);
+
+    t_pixel *VECpixeles = (t_pixel *)malloc(num_pixeles * sizeof(t_pixel));
+    if (VECpixeles == NULL)
+    {
+        puts("Error");
+        fclose(PUNTERO_IMAGEN);
+        fclose(PUNTERO_IMAGEN_MODIFICADA);
+        return;
+    }
+
+    fseek(PUNTERO_IMAGEN, metadata.comienzoImagen, SEEK_SET);
+    fread(VECpixeles, sizeof(t_pixel), num_pixeles, PUNTERO_IMAGEN);
+
+    num_pixeles_recortados = nuevo_ancho * nuevo_alto;
+    t_pixel *VECpixelesRecortados = (t_pixel *)malloc(num_pixeles_recortados * sizeof(t_pixel));
+
+    if (VECpixelesRecortados == NULL)
+    {
+        puts("Error al asignar memoria.");
+        free(VECpixeles);
+        fclose(PUNTERO_IMAGEN);
+        fclose(PUNTERO_IMAGEN_MODIFICADA);
+        return;
+    }
+
+    for (int i = 0; i < nuevo_alto; i++)
+    {
+        for (int j = 0; j < nuevo_ancho; j++)
+        {
+            VECpixelesRecortados[i * nuevo_ancho + j] = VECpixeles[(i * 2) * metadata.ancho + (j * 2)];
+        }
+    }
+
+    metadata.ancho = nuevo_ancho;
+    metadata.alto = nuevo_alto;
+    metadata.tamArchivo = metadata.comienzoImagen + num_pixeles_recortados * sizeof(t_pixel);
+
+    fseek(PUNTERO_IMAGEN_MODIFICADA, 0, SEEK_SET);
+
+    //0x4D42 representa los dos primeros bytes de un archivo BMP,
+    unsigned short type = 0x4D42;
+    fwrite(&type, sizeof(unsigned short), 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&metadata.tamArchivo, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+
+    fwrite(&auxCeros, sizeof(unsigned char),4 , PUNTERO_IMAGEN_MODIFICADA);
+
+    fwrite(&metadata.comienzoImagen, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&metadata.tamEncabezado, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&metadata.ancho, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&metadata.alto, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+
+    fwrite(&auxCeros, sizeof(unsigned short), 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&metadata.profundidad, 2, 1, PUNTERO_IMAGEN_MODIFICADA);
+
+    unsigned int imageTammm = num_pixeles_recortados * sizeof(t_pixel);
+
+    fwrite(&auxCeros, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&imageTammm, 4, 1, PUNTERO_IMAGEN_MODIFICADA);
+    fwrite(&auxCeros, 16, 1, PUNTERO_IMAGEN_MODIFICADA);
+
+    fseek(PUNTERO_IMAGEN_MODIFICADA, metadata.comienzoImagen, SEEK_SET);
+    fwrite(VECpixelesRecortados, sizeof(t_pixel), num_pixeles_recortados, PUNTERO_IMAGEN_MODIFICADA);
+
+    free(VECpixeles);
+    free(VECpixelesRecortados);
+    fclose(PUNTERO_IMAGEN);
+    fclose(PUNTERO_IMAGEN_MODIFICADA);
+}
 //-------------------------------------------------------------------------------------------------------------------------------
 void _CopiarImagen (const char *nombImagen, char argv[])
 {
